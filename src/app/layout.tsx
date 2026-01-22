@@ -7,14 +7,43 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import './globals.css'
 import ReactQueryProvider from '@/providers/ReactQueryProvider'
 
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : 'http://localhost:3000'
+const defaultUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: 'Next.js and Supabase Starter Kit',
-  description: 'The fastest way to build apps with Next.js and Supabase',
+  title: {
+    default: 'Custom Artwork | Turn a Place You Love into Timeless Art',
+    template: '%s | Custom Artwork',
+  },
+  description:
+    'Commission a bespoke artwork from a photo of a place you love. Hand-drawn in the UK, printed and framed to order.',
+  keywords: [
+    'custom artwork',
+    'bespoke art',
+    'commissioned art',
+    'UK art prints',
+    'framed prints',
+    'coastal art',
+    'landscape art',
+  ],
+  authors: [{ name: 'Holly' }],
+  openGraph: {
+    type: 'website',
+    locale: 'en_GB',
+    siteName: 'Custom Artwork',
+    title: 'Turn a Place You Love into Timeless Art',
+    description:
+      'Commission a bespoke artwork from a photo of a place you love. Hand-drawn in the UK, printed and framed to order.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Custom Artwork',
+    description: 'Turn a place you love into timeless art',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 const geistSans = Geist({
@@ -31,10 +60,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.className} antialiased`}>
-        <NextTopLoader showSpinner={false} height={2} color="#2acf80" />
+        <NextTopLoader showSpinner={false} height={2} color="#4A90A4" />
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
