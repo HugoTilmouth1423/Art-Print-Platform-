@@ -1,9 +1,40 @@
 import Stripe from 'stripe'
 
-// Initialize Stripe with the secret key
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  typescript: true,
-})
+let stripeInstance: Stripe | null = null
+
+// Get Stripe instance (lazy initialization)
+export function getStripe(): Stripe {
+  if (!stripeInstance) {
+    const apiKey = process.env.STRIPE_SECRET_KEY
+    if (!apiKey) {
+      throw new Error('STRIPE_SECRET_KEY is not configured')
+    }
+    stripeInstance = new Stripe(apiKey, {
+      typescript: true,
+    })
+  }
+  return stripeInstance
+}
+
+// For backward compatibility - will throw if called without config
+export const stripe = {
+  checkout: {
+    sessions: {
+      create: async (params: Stripe.Checkout.SessionCreateParams) => {
+        return getStripe().checkout.sessions.create(params)
+      },
+    },
+  },
+  webhooks: {
+    constructEvent: (
+      body: string,
+      signature: string,
+      secret: string,
+    ): Stripe.Event => {
+      return getStripe().webhooks.constructEvent(body, signature, secret)
+    },
+  },
+}
 
 // Create checkout session for a project
 export async function createCheckoutSession({
@@ -23,7 +54,9 @@ export async function createCheckoutSession({
   successUrl: string
   cancelUrl: string
 }) {
-  const session = await stripe.checkout.sessions.create({
+  const stripeClient = getStripe()
+
+  const session = await stripeClient.checkout.sessions.create({
     payment_method_types: ['card'],
     mode: 'payment',
     customer_email: customerEmail,
